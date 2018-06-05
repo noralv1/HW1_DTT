@@ -1,26 +1,19 @@
 # 1. Merging the training and test sets to create one data set
 # Reading test files
 x_test = read.table("/Volumes/NORASFLASH/data/UCI_data/test/X_test.txt")
-y_test = read.table("/Volumes/NORASFLASH/data/UCI_data/test/y_test.txt")
-subject_test = read.table("/Volumes/NORASFLASH/data/UCI_data/subject_test.txt")
+y_test = read.table("/Volumes/NORASFLASH/data/UCI_data/test/y_test.txt", col.names = "activity_id")
+subject_test = read.table("/Volumes/NORASFLASH/data/UCI_data/subject_test.txt", col.names = "subject_id")
 # Reading train files
 x_train = read.table("/Volumes/NORASFLASH/data/UCI_data/train/X_train.txt")
-y_train = read.table("/Volumes/NORASFLASH/data/UCI_data/train/y_train.txt")
-subject_train = read.table("/Volumes/NORASFLASH/data/UCI_data/subject_train.txt")
+y_train = read.table("/Volumes/NORASFLASH/data/UCI_data/train/y_train.txt", col.names = "activity_id")
+subject_train = read.table("/Volumes/NORASFLASH/data/UCI_data/subject_train.txt", col.names = "subject_id")
 # Reading features
 features = read.table("/Volumes/NORASFLASH/data/UCI_data/features.txt")
 # Reading activity labels
-activity_labels = read.table("/Volumes/NORASFLASH/data/UCI_data/activity_labels.txt")
+activity_labels = read.table("/Volumes/NORASFLASH/data/UCI_data/activity_labels.txt" ,col.names=c("id", "name"))
 # label data sets 
 colnames(x_train) = features[,2]
-colnames(y_train) = "activity_id"
-colnames(subject_train) = "subject_id"
-
 colnames(x_test) = features[,2]
-colnames(y_test) = "activity_id"
-colnames(subject_test) = "subject_id"
-
-colnames(activity_labels) = c('activity_id', 'activity_type')
 
 all_train = cbind(y_train, x_train, subject_train)
 all_test = cbind(y_test, x_test, subject_test)
@@ -42,5 +35,9 @@ data_named = merge(data_mean_std, activity_labels,
                         all.x = TRUE)
 final_tidy = aggregate(.~subject_id + activity_id, data_named,mean)
 final_tidy = final_tidy[order(final_tidy$subject_id, final_tidy$activity_id),]
+
+for (i in 1:nrow(activity_labels)) {
+  final_tidy$activity_id[final_tidy$activity_id == activity_labels[i, "id"]] <- as.character(activity_labels[i, "name"])
+}
 
 write.table(final_tidy, "final_tidy.txt", row.names = FALSE)
