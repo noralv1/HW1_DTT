@@ -39,5 +39,5 @@ final_tidy = final_tidy[order(final_tidy$subject_id, final_tidy$activity_id),]
 for (i in 1:nrow(activity_labels)) {
   final_tidy$activity_id[final_tidy$activity_id == activity_labels[i, "id"]] <- as.character(activity_labels[i, "name"])
 }
-
+#output text file
 write.table(final_tidy, "final_tidy.txt", row.names = FALSE)
